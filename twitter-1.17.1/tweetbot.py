@@ -1,5 +1,5 @@
 
-import time, sys
+import time, sys, json
 from twitter import *
 
 #consumer key
@@ -28,25 +28,48 @@ result_search = api.search.tweets(q="@pythonmcbotty")
 # tweets = result_search['description']['user']['screen_name']
 reply_to = []
 a = 0
+
+
 for i in result_search['statuses']:
-	reply_to.append({"id": result_search['statuses'][a]['id'], "name" : result_search['statuses'][a]['user']['screen_name']})
+	reply_to.append({"id": result_search['statuses'][a]['id'],
+		"name" : result_search['statuses'][a]['user']['screen_name']
+		, "msg" : result_search['statuses'][a]['text']
+		})
 	a = a + 1
 
-status_id = [li['id'] for li in reply_to]
-status_sname = [li['name'] for li in reply_to]
-print(status_id)
-print(status_sname)
+reply_id = [li['id'] for li in reply_to]
+reply_sname = [li['name'] for li in reply_to]
+reply_msg = [li['msg'] for li in reply_to]
 
-for x in range(0,len(status_id)):
-	api.statuses.update(status = "@" + status_sname[x] + " i am sentient " + str(x),
-		in_reply_to_status_id = status_id[x])
+a = 0
+for x in reply_msg:
+	x = x.split("@pythonmcbotty")
+	x = x[1:]
+	reply_msg[a] = x
+	a += 1
 
+# print(reply_id)
+# print(reply_sname)
+# print(reply_msg)
 
-# x = api.statuses.home_timeline()
+reply = True
 
-# print(x)
-# # The first 'tweet' in the timeline
-# x[0]
+for x in range(0,len(reply_id)):
+	with open('responded_id.txt', 'r') as outfile:
+		for line in outfile:
+			data = json.loads(line)
 
-# # The screen name of the user who wrote the first 'tweet'
-# print(x[0]['user']['screen_name'])
+			if data["id"] == reply_id[x]:
+				print("match!: " + data['id'] + " & " + reply_id[x])
+				reply = False
+		outfile.close()
+
+	if reply == True:
+		api.statuses.update(status = "@" + reply_sname[x] + "  fuk ur ass xD " + str(x),
+		in_reply_to_status_id = reply_id[x])
+		
+		with open('responded_id.txt', 'a') as outfile:
+			outfile.write("{}\n".format(json.dumps({"id": result_search['statuses'][x]['id'],
+			"name" : result_search['statuses'][x]['user']['screen_name']
+			, "msg" : result_search['statuses'][x]['text']
+			}))
