@@ -1,5 +1,5 @@
 
-import time, sys, json
+import time, sys, json, random
 from twitter import *
 
 #consumer key
@@ -53,7 +53,8 @@ for x in reply_msg:
 #     for data in reply_to:
 #         outfile.write("{}\n".format(json.dumps(data)))
 
-reply = True
+reply_boo = True
+reply = ['Hello :)', 'Hi!', 'Have a great day!', 'Thanks! You\'re Awesome!', ':D', 'BANGBANGBANGBANG YOURE ONE UNLUCKY MOTHERFUCKER']
 
 for x in range(0,len(reply_id)):
 	with open('responded_id.json', 'r') as outfile:
@@ -61,11 +62,11 @@ for x in range(0,len(reply_id)):
 			data = json.loads(line)
 			if data['id'] == reply_id[x]:
 				# print("match!: " + str(data['id']) + " & " + str(reply_id[x]))
-				reply = False
+				reply_boo = False
 		outfile.close()
 
-	if reply == True:
-		api.statuses.update(status = "@" + reply_sname[x] + " hello" + str(x),
+	if reply_boo == True:
+		api.statuses.update(status = "@" + reply_sname[x] + " " + reply[random.randrange(0,6)],
 		in_reply_to_status_id = reply_id[x])
 		
 		with open('responded_id.json', 'a') as outfile1:
@@ -74,6 +75,6 @@ for x in range(0,len(reply_id)):
 			, "msg" : result_search['statuses'][x]['text']
 			})))
 		outfile1.close()
-		print('added: ' + result_search['statuses'][x]['user']['screen_name'] + result_search['statuses'][x]['text'])
+		print('added: ' + result_search['statuses'][x]['user']['screen_name'] + " " + result_search['statuses'][x]['text'])
 
 print('done')
