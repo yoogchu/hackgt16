@@ -14,6 +14,17 @@ access_token_secret = 'M4q4FFpT4zDf4LSZt48fHA2rwtL4nSXwWnVOy6LQPOzIK'
 
 api = Twitter(auth=OAuth(access_token, access_token_secret, cons_key, cons_secret))
 
+auth = OAuth(
+             consumer_key='ejpx7EvLOs0VfagFNw5MHfI1H',
+             consumer_secret='W0j1VktG0NeQkY6vR7xcz2b0xA4CdR9FgEanF4xxshqYMukVZ2',
+             token='779561677071216640-wCPOlBEoTCNVbDbCALhFxjLaAHYkgKR',
+             token_secret='M4q4FFpT4zDf4LSZt48fHA2rwtL4nSXwWnVOy6LQPOzIK'
+             )
+twitter_userstream = TwitterStream(auth=auth, domain='userstream.twitter.com')
+for msg in twitter_userstream.user():
+    if 'direct_message' in msg:
+        print msg['direct_message']['text']
+
 #if mentioned
 result_search = api.search.tweets(q="@pythonmcbotty")
 
