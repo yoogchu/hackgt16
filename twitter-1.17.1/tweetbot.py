@@ -21,71 +21,71 @@ auth = OAuth(
              token_secret='M4q4FFpT4zDf4LSZt48fHA2rwtL4nSXwWnVOy6LQPOzIK'
              )
 twitter_userstream = TwitterStream(auth=auth, domain='userstream.twitter.com')
-for msg in twitter_userstream.user():
-    if 'direct_message' in msg:
-        print msg['direct_message']['text']
-
-#if mentioned
-result_search = api.search.tweets(q="@pythonmcbotty")
-
-print(result_search)
-reply_to = []
-
-#creating the list of dictionaries
-a = 0
-for i in result_search['statuses']:
-	reply_to.append({"id": result_search['statuses'][a]['id'],
-		"name" : result_search['statuses'][a]['user']['screen_name']
-		, "msg" : result_search['statuses'][a]['text']
-		})
-	a = a + 1
-
-#parsing
-reply_id = [li['id'] for li in reply_to]
-reply_sname = [li['name'] for li in reply_to]
-reply_msg = [li['msg'] for li in reply_to]
 
 
-#filter out the mention tag
-a = 0
-for x in reply_msg:
-	x = x.split("@pythonmcbotty")
-	x = x[1:]
-	reply_msg[a] = x
-	a += 1
+while(True):
 
-#for debugging
-# print(reply_id)
-# print(reply_sname)
-# print(reply_msg)
+	#if mentioned
+	result_search = api.search.tweets(q="@pythonmcbotty")
 
-# creating the database
-# with open('responded_id.json', "w") as outfile:
-#     for data in reply_to:
-#         outfile.write("{}\n".format(json.dumps(data)))
+	reply_to = []
+	#creating the list of dictionaries
+	a = 0
+	for i in result_search['statuses']:
+		reply_to.append({"id": result_search['statuses'][a]['id'],
+			"name" : result_search['statuses'][a]['user']['screen_name']
+			, "msg" : result_search['statuses'][a]['text']
+			})
+		a = a + 1
 
-reply_boo = True
-reply = ['Hello :)', 'Hi!', 'Have a great day!', 'Thanks! You\'re Awesome!', ':D', 'BANGBANGBANGBANG YOURE ONE UNLUCKY MOTHERFUCKER']
+	#parsing
+	reply_id = [li['id'] for li in reply_to]
+	reply_sname = [li['name'] for li in reply_to]
+	reply_msg = [li['msg'] for li in reply_to]
 
-for x in range(0,len(reply_id)):
-	with open('responded_id.json', 'r') as outfile:
-		for line in outfile:
-			data = json.loads(line)
-			if data['id'] == reply_id[x]:
-				# print("match!: " + str(data['id']) + " & " + str(reply_id[x]))
-				reply_boo = False
-		outfile.close()
 
-	if reply_boo == True:
-		api.statuses.update(status = "@" + reply_sname[x] + " " + reply[random.randrange(0,6)],
-		in_reply_to_status_id = reply_id[x])
-		
-		with open('responded_id.json', 'a') as outfile1:
-			outfile1.write("{}\n".format(json.dumps({"id": result_search['statuses'][x]['id'],
-			"name" : result_search['statuses'][x]['user']['screen_name']
-			, "msg" : result_search['statuses'][x]['text']
-			})))
-		outfile1.close()
-		print('added: ' + result_search['statuses'][x]['user']['screen_name'] + " " + result_search['statuses'][x]['text'])
+	#filter out the mention tag
+	a = 0
+	for x in reply_msg:
+		x = x.split("@pythonmcbotty")
+		x = x[1:]
+		reply_msg[a] = x
+		a += 1
 
-print('done')
+	#for debugging
+	# print(reply_id)
+	# print(reply_sname)
+	# print(reply_msg)
+
+	# creating the database
+	# with open('responded_id.json', "w") as outfile:
+	#     for data in reply_to:
+	#         outfile.write("{}\n".format(json.dumps(data)))
+
+	reply_boo = True
+	reply = ['Hello :)', 'Hi!', 'Have a great day!', 'Thanks! You\'re Awesome!', ':D', 'BANGBANGBANGBANG YOURE ONE UNLUCKY MOTHERFUCKER']
+
+	for x in range(0,len(reply_id)):
+		with open('responded_id.json', 'r') as outfile:
+			for line in outfile:
+				data = json.loads(line)
+				if data['id'] == reply_id[x]:
+					# print("match!: " + str(data['id']) + " & " + str(reply_id[x]))
+					reply_boo = False
+			outfile.close()
+
+		if reply_boo == True:
+			api.statuses.update(status = "@" + reply_sname[x] + " " + reply[random.randrange(0,6)],
+			in_reply_to_status_id = reply_id[x])
+			
+			with open('responded_id.json', 'a') as outfile1:
+				outfile1.write("{}\n".format(json.dumps({"id": result_search['statuses'][x]['id'],
+				"name" : result_search['statuses'][x]['user']['screen_name']
+				, "msg" : result_search['statuses'][x]['text']
+				})))
+			outfile1.close()
+			print('added: ' + result_search['statuses'][x]['user']['screen_name'] + " " + result_search['statuses'][x]['text'])
+
+	print('done')
+	time.sleep(30)
+	print('waking up!')
