@@ -17,7 +17,7 @@ api = Twitter(auth=OAuth(access_token, access_token_secret, cons_key, cons_secre
 #if mentioned
 result_search = api.search.tweets(q="@pythonmcbotty")
 
-
+print(result_search)
 reply_to = []
 
 #creating the list of dictionaries
