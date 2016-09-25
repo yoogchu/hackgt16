@@ -1,6 +1,7 @@
 
 import time, sys, json, random, requests
 from twitter import *
+from urllib2 import urlopen
 
 #consumer key
 cons_key = 'ejpx7EvLOs0VfagFNw5MHfI1H'
@@ -30,8 +31,28 @@ def parseMsg(msg):
 		reply = flightStatus(msg[1:])
 
 	return reply
+
 def flightStatus(msg):
-	return ('no current information for: ' + str(msg))
+    print('got to status')
+    
+    data = {
+        'apikey' : 'wbLxNGwc1sLaeagn9KZaDT8Bn57aMZGA',
+        'flightNumber' : msg[0],
+        'flightDate' : msg[1]
+    }
+    url = 'https://demo30-test.apigee.net/v1/hack/status?flightNumber={flightNumber}&flightOriginDate={flightDate}&apikey={apikey}'.format(**data)
+
+    res = urlopen(url)
+    jsonOutput = json.load(res)
+
+#    print(jsonOutput['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['departureGate'])
+#    print(jsonOutput['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['arrivalLocalTimeEstimatedActual'])
+
+    departGate = jsonOutput['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['departureGate']
+    departTime =jsonOutput['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['arrivalLocalTimeEstimatedActual']
+
+    return "Gate: " + departGate + "Departure Time: " departTime
+
 
 while(True):
 
