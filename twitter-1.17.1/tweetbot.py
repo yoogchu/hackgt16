@@ -86,6 +86,6 @@ while(True):
 			outfile1.close()
 			print('added: ' + result_search['statuses'][x]['user']['screen_name'] + " " + result_search['statuses'][x]['text'])
 
-	print('done')
-	time.sleep(30)
+	print('sleeping...')
+	time.sleep(10)
 	print('waking up!')
