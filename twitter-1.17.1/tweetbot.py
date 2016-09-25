@@ -22,6 +22,10 @@ auth = OAuth(
              )
 twitter_userstream = TwitterStream(auth=auth, domain='userstream.twitter.com')
 
+def flightStatus(msg):
+
+	# msg = msg.split()
+	print("flight status msg: " + msg)
 
 while(True):
 
@@ -55,7 +59,7 @@ while(True):
 	#for debugging
 	# print(reply_id)
 	# print(reply_sname)
-	# print(reply_msg)
+	print(reply_msg)
 
 	# creating the database
 	# with open('responded_id.json', "w") as outfile:
@@ -63,7 +67,8 @@ while(True):
 	#         outfile.write("{}\n".format(json.dumps(data)))
 
 	reply_boo = True
-	reply = ['Hello :)', 'Hi!', 'Have a great day!', 'Thanks! You\'re Awesome!', ':D', 'BANGBANGBANGBANG YOURE ONE UNLUCKY MOTHERFUCKER']
+	# reply = ['Hello :)', 'Hi!', 'Have a great day!', 'Thanks! You\'re Awesome!', ':D', 'BANGBANGBANGBANG YOURE ONE UNLUCKY MOTHERFUCKER']
+	reply = ""
 
 	for x in range(0,len(reply_id)):
 		with open('responded_id.json', 'r') as outfile:
@@ -75,8 +80,10 @@ while(True):
 			outfile.close()
 
 		if reply_boo == True:
-			api.statuses.update(status = "@" + reply_sname[x] + " " + reply[random.randrange(0,6)],
-			in_reply_to_status_id = reply_id[x])
+
+			print(reply_msg[x])
+			# api.statuses.update(status = "@" + reply_sname[x] + " " + reply[random.randrange(0,6)],
+			# in_reply_to_status_id = reply_id[x])
 			
 			with open('responded_id.json', 'a') as outfile1:
 				outfile1.write("{}\n".format(json.dumps({"id": result_search['statuses'][x]['id'],
