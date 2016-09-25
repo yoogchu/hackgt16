@@ -1,5 +1,5 @@
 
-import time, sys, json, random
+import time, sys, json, random, requests
 from twitter import *
 
 #consumer key
@@ -27,10 +27,11 @@ def parseMsg(msg):
 	print("command: " + msg[0])
 	command = msg[0]
 	if command.lower() == 'status':
-		flightStatus(msg[1:])
+		reply = flightStatus(msg[1:])
 
+	return reply
 def flightStatus(msg):
-	print(msg)
+	return ('no current information for: ' + str(msg))
 
 while(True):
 
@@ -86,9 +87,10 @@ while(True):
 
 		if reply_boo == True:
 
-			parseMsg(reply_msg[x])
-			# api.statuses.update(status = "@" + reply_sname[x] + " " + reply[random.randrange(0,6)],
-			# in_reply_to_status_id = reply_id[x])
+			reply = parseMsg(reply_msg[x])
+
+			api.statuses.update(status = "@" + reply_sname[x] + " " + reply,
+			in_reply_to_status_id = reply_id[x])
 			
 			with open('responded_id.json', 'a') as outfile1:
 				outfile1.write("{}\n".format(json.dumps({"id": result_search['statuses'][x]['id'],
@@ -99,5 +101,5 @@ while(True):
 			print('added: ' + result_search['statuses'][x]['user']['screen_name'] + " " + result_search['statuses'][x]['text'])
 
 	print('sleeping...')
-	time.sleep(1)
+	time.sleep(10)
 	print('waking up!')
