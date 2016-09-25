@@ -22,10 +22,15 @@ auth = OAuth(
              )
 twitter_userstream = TwitterStream(auth=auth, domain='userstream.twitter.com')
 
-def flightStatus(msg):
+def parseMsg(msg):
+	msg = msg[0].split()
+	print("command: " + msg[0])
+	command = msg[0]
+	if command.lower() == 'status':
+		flightStatus(msg[1:])
 
-	# msg = msg.split()
-	print("flight status msg: " + msg)
+def flightStatus(msg):
+	print(msg)
 
 while(True):
 
@@ -59,7 +64,7 @@ while(True):
 	#for debugging
 	# print(reply_id)
 	# print(reply_sname)
-	print(reply_msg)
+	# print(reply_msg)
 
 	# creating the database
 	# with open('responded_id.json', "w") as outfile:
@@ -81,7 +86,7 @@ while(True):
 
 		if reply_boo == True:
 
-			print(reply_msg[x])
+			parseMsg(reply_msg[x])
 			# api.statuses.update(status = "@" + reply_sname[x] + " " + reply[random.randrange(0,6)],
 			# in_reply_to_status_id = reply_id[x])
 			
@@ -94,5 +99,5 @@ while(True):
 			print('added: ' + result_search['statuses'][x]['user']['screen_name'] + " " + result_search['statuses'][x]['text'])
 
 	print('sleeping...')
-	time.sleep(10)
+	time.sleep(1)
 	print('waking up!')
