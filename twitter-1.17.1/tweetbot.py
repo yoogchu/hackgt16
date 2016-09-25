@@ -16,11 +16,11 @@ access_token_secret = 'M4q4FFpT4zDf4LSZt48fHA2rwtL4nSXwWnVOy6LQPOzIK'
 api = Twitter(auth=OAuth(access_token, access_token_secret, cons_key, cons_secret))
 
 auth = OAuth(
-             consumer_key='ejpx7EvLOs0VfagFNw5MHfI1H',
-             consumer_secret='W0j1VktG0NeQkY6vR7xcz2b0xA4CdR9FgEanF4xxshqYMukVZ2',
-             token='779561677071216640-wCPOlBEoTCNVbDbCALhFxjLaAHYkgKR',
-             token_secret='M4q4FFpT4zDf4LSZt48fHA2rwtL4nSXwWnVOy6LQPOzIK'
-             )
+			 consumer_key='ejpx7EvLOs0VfagFNw5MHfI1H',
+			 consumer_secret='W0j1VktG0NeQkY6vR7xcz2b0xA4CdR9FgEanF4xxshqYMukVZ2',
+			 token='779561677071216640-wCPOlBEoTCNVbDbCALhFxjLaAHYkgKR',
+			 token_secret='M4q4FFpT4zDf4LSZt48fHA2rwtL4nSXwWnVOy6LQPOzIK'
+			 )
 twitter_userstream = TwitterStream(auth=auth, domain='userstream.twitter.com')
 
 def parseMsg(msg):
@@ -29,30 +29,40 @@ def parseMsg(msg):
 	command = msg[0]
 	if command.lower() == 'status':
 		reply = flightStatus(msg[1:])
-
+	else:
+		reply = "Command not recognized"
 	return reply
 
 def flightStatus(msg):
-    print('got to status')
-    
-    data = {
-        'apikey' : 'wbLxNGwc1sLaeagn9KZaDT8Bn57aMZGA',
-        'flightNumber' : msg[0],
-        'flightDate' : msg[1]
-    }
-    url = 'https://demo30-test.apigee.net/v1/hack/status?flightNumber={flightNumber}&flightOriginDate={flightDate}&apikey={apikey}'.format(**data)
+	print('got to status')
+	
+	data = {
+		'apikey' : 'wbLxNGwc1sLaeagn9KZaDT8Bn57aMZGA',
+		'flightNumber' : msg[0],
+		'flightDate' : msg[1]
+	}
+	url = 'https://demo30-test.apigee.net/v1/hack/status?flightNumber={flightNumber}&flightOriginDate={flightDate}&apikey={apikey}'.format(**data)
 
-    res = urlopen(url)
-    jsonOutput = json.load(res)
+	res = urlopen(url)
+	jsonOutput = json.load(res)
 
-#    print(jsonOutput['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['departureGate'])
-#    print(jsonOutput['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['arrivalLocalTimeEstimatedActual'])
+	# print(jsonOutput['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['departureGate'])
+	# print(jsonOutput['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['arrivalLocalTimeEstimatedActual'])
+	# print(jsonOutput['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['departureLocalTimeEstimatedActualString'])
 
-    departGate = jsonOutput['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['departureGate']
-    departTime =jsonOutput['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['arrivalLocalTimeEstimatedActual']
+	try:
+		departGate = jsonOutput['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['departureGate']
+	except KeyError:
+		departGate = 'TBA'
 
-    return "Gate: " + departGate + "Departure Time: " departTime
+	try:
+		departTime = jsonOutput['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['departureLocalTimeScheduled']
+		departStatus = jsonOutput['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['departureLocalTimeEstimatedActualString']
+	except KeyError:
+		return "Flight information could not be found." 
 
+	reply = "Gate: " + departGate + " Departure Time: " + departTime[11:16] + " " + departStatus
+	return reply
 
 while(True):
 
@@ -110,8 +120,9 @@ while(True):
 
 			reply = parseMsg(reply_msg[x])
 
-			api.statuses.update(status = "@" + reply_sname[x] + " " + reply,
-			in_reply_to_status_id = reply_id[x])
+			#send tweet
+			# api.statuses.update(status = "@" + reply_sname[x] + " " + reply,
+			# in_reply_to_status_id = reply_id[x])
 			
 			with open('responded_id.json', 'a') as outfile1:
 				outfile1.write("{}\n".format(json.dumps({"id": result_search['statuses'][x]['id'],
@@ -120,6 +131,7 @@ while(True):
 				})))
 			outfile1.close()
 			print('added: ' + result_search['statuses'][x]['user']['screen_name'] + " " + result_search['statuses'][x]['text'])
+			print('replied: ' + reply)
 
 	print('sleeping...')
 	time.sleep(10)
