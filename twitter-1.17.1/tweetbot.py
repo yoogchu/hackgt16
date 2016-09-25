@@ -64,6 +64,19 @@ def flightStatus(msg):
 	reply = "Gate: " + departGate + " Departure Time: " + departTime[11:16] + " " + departStatus
 	return reply
 
+def travelTime(start, stop):
+    data = {
+        'apikey' : 'AIzaSyB7YL2a1aspx3BRG542p3J7C6fsVTRTbEc',
+        'origin' : start,
+        'dest' : stop
+    }
+    url = 'https://maps.googleapis.com/maps/api/directions/json?origin={origin}&destination={stop}&key={apikey}'.format(**data)
+        
+    res = urlopen(url)
+    jsonOutput = json.load(res)
+    return jsonOutput['routes']['duration']['text']
+
+
 while(True):
 
 	#if mentioned
